@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>✨ Magical Birthday Adventure | A Fantasy Storybook Experience ✨</title>
+    <!-- Google Fonts: Premium Combo -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            background: #0a0a2a;
+            color: #fff9f0;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="27" viewBox="0 0 24 27"><circle cx="12" cy="12" r="10" fill="%23ffb7c5" stroke="%23ff69b4" stroke-width="1.5" /><path d="M12 2 L14 8 L20 8 L15 12 L17 18 L12 14 L7 18 L9 12 L4 8 L10 8 Z" fill="%23ffdd88" /></svg>') 12 5, auto;
+        }
+
+        /* Loading Screen */
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #1a1a3e, #030318);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 25px;
+            transition: opacity 1.5s ease;
+            font-family: 'Pacifico', cursive;
+        }
+
+        .spinner {
+            width: 80px;
+            height: 80px;
+            border: 5px solid rgba(255,200,240,0.3);
+            border-top: 5px solid #ff91d8;
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .progress-bar {
+            width: 300px;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ffb3e6, #c084fc);
+            animation: loadProgress 2.5s ease forwards;
+            border-radius: 10px;
+        }
+
+        @keyframes loadProgress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .app {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            display: none;
+        }
+
+        .chapter {
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            flex-direction: column;
+            padding: 2rem;
+            transition: opacity 0.8s ease, transform 0.6s ease;
+            opacity: 1;
+        }
+
+        .chapter.hidden {
+            display: none;
+        }
+
+        /* Aurora Background */
+        .aurora-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(125deg, #0b0822, #20113a, #381c4e, #5e2a6b, #3d1f5e);
+            background-size: 400% 400%;
+            animation: auroraWave 20s ease infinite;
+            z-index: -2;
+        }
+
+        @keyframes auroraWave {
+            0% { background-position: 0% 50%;}
+            50% { background-position: 100% 50%;}
+            100% { background-position: 0% 50%;}
+        }
+
+        .stars-layer, .particles-layer, .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: twinkle 3s infinite alternate;
+        }
+
+        @keyframes twinkle { 0% { opacity: 0.2; transform: scale(1); } 100% { opacity: 1; transform: scale(1.3); } }
+
+        .glass-card {
+            background: rgba(255, 240, 250, 0.15);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            border: 1px solid rgba(255,255,210,0.3);
+            box-shadow: 0 25px 40px rgba(0,0,0,0.2), 0 0 30px rgba(255,200,255,0.2);
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        button, .glow-btn {
+            background: linear-gradient(135deg, #ffb3e6, #c084fc);
+            border: none;
+            padding: 14px 36px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 60px;
+            color: #2c0f2f;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #ffa5e0;
+        }
+
+        .hero-title { font-family: 'Pacifico', cursive; font-size: 3rem; text-shadow: 0 0 20px rgba(255,200,255,0.5); }
+        .fantasy-title { font-family: 'Cinzel', serif; font-size: 2rem; margin-bottom: 1rem; letter-spacing: 2px; }
+        .secret-letter { font-family: 'Dancing Script', cursive; font-size: 1.6rem; }
+        .body-text { font-family: 'Poppins', sans-serif; }
+
+        .grid-3, .star-grid, .flower-grid, .chest-grid, .cookie-grid, .envelope-grid, .openwhen-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 1.2rem;
+            width: 90%;
+            max-width: 1200px;
+            margin: 2rem auto;
+        }
+
+        .card {
+            background: rgba(255,235,250,0.25);
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
+            padding: 1.2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,200,0.5);
+        }
+
+        .card:hover { transform: scale(1.02); background: rgba(255,235,250,0.4); }
+
+        /* Dragon Mascot */
+        .dragon-mascot {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-size: 3rem;
+            cursor: pointer;
+            z-index: 100;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+            transition: transform 0.3s;
+            pointer-events: auto;
+        }
+        .dragon-mascot:hover { transform: scale(1.1); }
+        .dragon-speech {
+            position: fixed;
+            bottom: 90px;
+            left: 80px;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            z-index: 100;
+            font-family: 'Poppins', sans-serif;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        @keyframes floatAnim { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-12px); } }
+        .floating { animation: floatAnim 3s ease-in-out infinite; }
+
+        @keyframes bounceHeart { 0%,100%{ transform: scale(1); } 50%{ transform: scale(1.2); } }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2rem; }
+            .fantasy-title { font-size: 1.5rem; }
+            .secret-letter { font-size: 1.2rem; }
+            .grid-3, .star-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+            .dragon-mascot { font-size: 2rem; bottom: 10px; left: 10px; }
+        }
+    </style>
+</head>
+<body>
+<div id="loading">
+    <div class="spinner"></div>
+    <h2>✨ Preparing Birthday Magic... ✨</h2>
+    <div class="progress-bar"><div class="progress-fill"></div></div>
+    <p style="font-family:'Poppins'">Summoning stars and wishes...</p>
+</div>
+
+<div class="app" id="app">
+    <div class="aurora-bg"></div>
+    <div id="starsLayer" class="stars-layer"></div>
+    <div id="particlesLayer" class="particles-layer"></div>
+    <div id="floatingHearts" class="floating-hearts"></div>
+    
+    <div class="dragon-mascot" id="dragon">🐉✨</div>
+    <div class="dragon-speech" id="dragonSpeech">Psst... I found magic!</div>
+    
+    <!-- Local MP3 Music - Valentine Mashup (Fully Automatic - No Button) -->
+    <audio id="bgMusic" loop preload="auto" autoplay>
+        <source src="Valentine%20Mashup%202024%20%20Naresh%20Parmar%20%20Best%20of%20Love%20Mashup.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Chapters 1-15 will be dynamically generated -->
+    <div id="chapters-container"></div>
+    <div id="finalMessage" class="chapter hidden"></div>
+    <div id="secretEnding" class="chapter hidden"></div>
+</div>
+
+<script>
+    // ==================== INITIALIZATION ====================
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playPop() { if(audioCtx.state === 'suspended') audioCtx.resume(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.value = 800; gain.gain.value = 0.08; osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.3); osc.stop(audioCtx.currentTime + 0.2); }
+    function playCheer() { if(audioCtx.state==='suspended') audioCtx.resume(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.value = 1200; gain.gain.value = 0.1; osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.4); osc.stop(audioCtx.currentTime + 0.3); }
+
+    // Background stars
+    function initStars() {
+        const starsDiv = document.getElementById('starsLayer');
+        for(let i=0;i<200;i++) {
+            let star = document.createElement('div');
+            star.classList.add('star');
+            let size = Math.random() * 3 + 1;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 5 + 's';
+            starsDiv.appendChild(star);
+        }
+    }
+
+    function createFloatingHearts() {
+        setInterval(() => {
+            let heart = document.createElement('div');
+            heart.innerHTML = ['❤️','💖','💜','✨','🌸'][Math.floor(Math.random()*5)];
+            heart.style.position = 'fixed';
+            heart.style.fontSize = (Math.random() * 20 + 18) + 'px';
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.bottom = '-30px';
+            heart.style.opacity = '0.6';
+            heart.style.pointerEvents = 'none';
+            heart.style.animation = `floatUp ${Math.random() * 5 + 5}s linear forwards`;
+            document.getElementById('floatingHearts').appendChild(heart);
+            setTimeout(() => heart.remove(), 8000);
+        }, 600);
+    }
+    const floatKey = `@keyframes floatUp { 0% { bottom: -30px; opacity:0.6; } 100% { bottom: 110%; opacity:0; } }`;
+    document.head.appendChild(document.createElement('style')).innerHTML = floatKey;
+
+    // Dragon messages
+    const dragonMessages = ["Psst... I found a secret!", "You're doing great! ✨", "There is more magic ahead!", "Try clicking everything!", "Stars hold wishes...", "Keep exploring!", "🐉💜"];
+    function startDragon() {
+        const dragon = document.getElementById('dragon');
+        const speech = document.getElementById('dragonSpeech');
+        dragon.onmouseenter = () => { speech.innerText = dragonMessages[Math.floor(Math.random()*dragonMessages.length)]; speech.style.opacity = '1'; setTimeout(()=> speech.style.opacity='0', 2000); };
+        setInterval(() => { if(Math.random()<0.3) { speech.innerText = dragonMessages[Math.floor(Math.random()*dragonMessages.length)]; speech.style.opacity = '1'; setTimeout(()=> speech.style.opacity='0', 2500); } }, 15000);
+    }
+
+    // Data Collections
+    const starMessages = ["You are appreciated.", "You make people smile.", "You matter.", "You are loved.", "You are enough.", "You bring joy.", "Your kindness matters.", "You're a star.", "The world is better with you.", "You're unique.", "You're strong.", "You're beautiful inside.", "You're a gift.", "You inspire others.", "Your laughter is contagious.", "You're amazing!"];
+    while(starMessages.length < 50) starMessages.push("✨ You are wonderful ✨", "💖 You shine bright 💖");
+    
+    const wishes = ["May happiness follow you.", "May your dreams come true.", "May this year bring beautiful surprises.", "May you find endless joy.", "May love surround you.", "May success find you.", "May you stay healthy and strong.", "May each day be magical.", "May you always smile.", "May kindness return to you."];
+    while(wishes.length < 50) wishes.push("🌸 A beautiful wish for you 🌸");
+    
+    const treasures = ["You're hilarious!", "You have great taste in music.", "You're a wonderful friend.", "You light up every room.", "You're so thoughtful.", "You give the best advice.", "You're incredibly kind.", "You're so creative!", "You're fun to be around.", "You make ordinary days special."];
+    while(treasures.length < 30) treasures.push("💎 You're a treasure! 💎");
+    
+    const fortunes = ["A great adventure awaits!", "Smile, something good is coming.", "You will receive wonderful news.", "Good luck follows you.", "Happiness is around the corner.", "Your kindness will return tenfold.", "A surprise gift is coming.", "You will shine bright today!", "Dream big, it will come true.", "New opportunities await!"];
+    while(fortunes.length < 50) fortunes.push("🍪 A fortune cookie blessing! 🍪");
+    
+    const compliments = [];
+    for(let i=1;i<=100;i++) compliments.push(`✨ You are ${['incredible','magical','wonderful','adorable','brilliant','radiant','sweet','fabulous','unique','precious'][i%10]}! ✨`);
+    
+    const predictions = [];
+    for(let i=1;i<=100;i++) predictions.push(`🔮 ${['Adventure awaits!','Great things are coming!','A surprise opportunity is near!','Joy is heading your way!','Love finds you!','Success is yours!','Magic surrounds you!','Happiness blooms!','Stars align for you!','Wonderful days ahead!'][i%10]} 🔮`);
+    
+    // Easter Eggs
+    document.addEventListener('keydown', (e) => {
+        if(e.key === 'h' || e.key === 'H') { alert('🤗 Virtual Hug Sent! You are loved! 💜'); playPop(); }
+        if(e.key === 'b' || e.key === 'B') { alert('🎂 Birthday Mode Activated! 🎉'); playCheer(); }
+        if(e.key === 'l' || e.key === 'L') { for(let i=0;i<30;i++) setTimeout(()=>createFloatingHearts,100); }
+        if(e.key === 'm' || e.key === 'M') { alert('🐱🐉 Cat Army Summoned! Meow! 🐱'); }
+    });
+
+    // Chapter Navigation
+    let currentChapter = 1;
+    
+    function showChapter(num) {
+        document.querySelectorAll('.chapter').forEach(ch => ch.classList.add('hidden'));
+        const target = document.getElementById(`chapter${num}`);
+        if(target) target.classList.remove('hidden');
+        currentChapter = num;
+        window.scrollTo(0,0);
+        playPop();
+        localStorage.setItem('birthdayProgress', num);
+    }
+    
+    function buildChapters() {
+        const container = document.getElementById('chapters-container');
+        container.innerHTML = `
+            <div id="chapter1" class="chapter"><div class="glass-card" style="max-width:700px;"><div class="secret-letter" id="prophecyText" style="font-size:2rem; min-height:200px;"></div><div style="display:flex; gap:20px; justify-content:center; margin:20px;"><span>📖</span><span>✨</span><span>🔮</span></div><button id="beginBtn" class="glow-btn">🌟 Begin Adventure 🌟</button></div></div>
+            <div id="chapter2" class="chapter hidden"><h2 class="fantasy-title">⭐ The Gift of Stars ⭐</h2><div class="star-grid" id="starGrid"></div><button class="nextBtn" data-next="3">Next Chapter →</button></div>
+            <div id="chapter3" class="chapter hidden"><h2 class="fantasy-title">🌸 The Garden of Wishes 🌸</h2><div class="flower-grid" id="flowerGrid"></div><button class="nextBtn" data-next="4">Next →</button></div>
+            <div id="chapter4" class="chapter hidden"><h2 class="fantasy-title">📦 Treasure Room 📦</h2><div class="chest-grid" id="chestGrid"></div><button class="nextBtn" data-next="5">Next →</button></div>
+            <div id="chapter5" class="chapter hidden"><h2 class="fantasy-title">🥠 Fortune Cookie Forest 🥠</h2><div class="cookie-grid" id="cookieGrid"></div><button class="nextBtn" data-next="6">Next →</button></div>
+            <div id="chapter6" class="chapter hidden"><h2 class="fantasy-title">💌 The Hall of Letters 💌</h2><div class="envelope-grid" id="envelopeGrid"></div><button class="nextBtn" data-next="7">Next →</button></div>
+            <div id="chapter7" class="chapter hidden"><h2 class="fantasy-title">📬 Open When Collection 📬</h2><div class="openwhen-grid" id="openwhenGrid"></div><button class="nextBtn" data-next="8">Next →</button></div>
+            <div id="chapter8" class="chapter hidden"><h2 class="fantasy-title">🐉 Star Collection Quest 🐉</h2><p>Collect hidden stars around the website! Click any glowing star ✨</p><div id="starCounter" style="font-size:1.5rem; margin:20px;">Stars Collected: <span id="starCount">0</span> / 10</div><div id="starRewards"></div><button class="nextBtn" data-next="9">Next →</button></div>
+            <div id="chapter9" class="chapter hidden"><h2 class="fantasy-title">🔮 The Crystal Ball 🔮</h2><div class="glass-card" id="crystalBall" style="cursor:pointer;"><div style="font-size:4rem;">🔮</div><p id="predictionText">Ask about your year...</p></div><button id="askBtn">Ask Crystal Ball</button><button class="nextBtn" data-next="10" style="margin-top:20px;">Next →</button></div>
+            <div id="chapter10" class="chapter hidden"><h2 class="fantasy-title">✨ The Compliment Machine ✨</h2><div class="glass-card" id="complimentDisplay" style="min-height:100px;">✨ Click for magic ✨</div><button id="genCompliment">Generate Magic 💖</button><button class="nextBtn" data-next="11">Next →</button></div>
+            <div id="chapter11" class="chapter hidden"><h2 class="fantasy-title">⏳ The Time Capsule ⏳</h2><div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;"><button id="pastBtn" class="glow-btn">Past</button><button id="presentBtn" class="glow-btn">Present</button><button id="futureBtn" class="glow-btn">Future</button></div><div id="timeMessage" class="secret-letter" style="margin-top:20px;"></div><button class="nextBtn" data-next="12">Next →</button></div>
+            <div id="chapter12" class="chapter hidden"><h2 class="fantasy-title">🎉 The Birthday Festival 🎉</h2><p style="margin:20px;">Celebration time! Balloons, lanterns, and magic everywhere!</p><div style="font-size:3rem;">🎈🏮🎆🎉</div><button class="nextBtn" data-next="13">Next →</button></div>
+            <div id="chapter13" class="chapter hidden"><h2 class="fantasy-title">🎂 The Final Cake 🎂</h2><div style="font-size:7rem;" id="cakeCandles">🎂🕯️🕯️🕯️🕯️🕯️</div><p>Click candles to extinguish and make a wish!</p><div id="cakeCeleb" style="display:none;"><h3>✨ Your wish is being sent to the stars... ✨</h3></div><button id="finalBtn">Continue to Final Message →</button></div>
+        `;
+        
+        // Populate grids
+        const starGrid = document.getElementById('starGrid');
+        starMessages.slice(0,30).forEach(msg => { let card = document.createElement('div'); card.className='card'; card.innerText='⭐ Click for message ⭐'; card.onclick=()=>{ card.innerText=msg; playPop(); }; starGrid.appendChild(card); });
+        
+        const flowerGrid = document.getElementById('flowerGrid');
+        wishes.slice(0,30).forEach(w => { let card = document.createElement('div'); card.className='card'; card.innerText='🌸 Click to bloom 🌸'; card.onclick=()=>{ card.innerText=w; playPop(); }; flowerGrid.appendChild(card); });
+        
+        const chestGrid = document.getElementById('chestGrid');
+        treasures.forEach(t => { let card = document.createElement('div'); card.className='card'; card.innerText='📦 Open treasure 📦'; card.onclick=()=>{ card.innerText=t; playPop(); }; chestGrid.appendChild(card); });
+        
+        const cookieGrid = document.getElementById('cookieGrid');
+        fortunes.slice(0,30).forEach(f => { let card = document.createElement('div'); card.className='card'; card.innerText='🥠 Fortune Cookie 🥠'; card.onclick=()=>{ card.innerText=f; playPop(); }; cookieGrid.appendChild(card); });
+        
+        const envelopeGrid = document.getElementById('envelopeGrid');
+        const letters = ["What makes you special: Your kindness.", "Things I admire: Your courage.", "Birthday wishes: Endless joy.", "Future hopes: All your dreams.", "Kind message: You are loved."];
+        letters.forEach(l => { let card = document.createElement('div'); card.className='card'; card.innerText='✉️ Secret Letter ✉️'; card.onclick=()=>{ card.innerText=l; card.style.fontFamily="'Dancing Script', cursive"; playPop(); }; envelopeGrid.appendChild(card); });
+        
+        const openwhenGrid = document.getElementById('openwhenGrid');
+        const openWhenItems = ["When sad: This too shall pass.", "When tired: Rest and recharge.", "When stressed: Breathe deeply.", "When lonely: I'm here.", "When happy: Celebrate!", "When overthinking: You're amazing."];
+        openWhenItems.forEach(o => { let card = document.createElement('div'); card.className='card'; card.innerText=`📬 ${o.split(':')[0]}`; card.onclick=()=>{ card.innerText=o; playPop(); }; openwhenGrid.appendChild(card); });
+        
+        // Crystal Ball
+        const askBtn = document.getElementById('askBtn');
+        const predictionText = document.getElementById('predictionText');
+        askBtn.onclick = () => { predictionText.innerText = predictions[Math.floor(Math.random()*predictions.length)]; playPop(); };
+        
+        // Compliment Machine
+        const compDisplay = document.getElementById('complimentDisplay');
+        document.getElementById('genCompliment').onclick = () => { compDisplay.innerHTML = compliments[Math.floor(Math.random()*compliments.length)]; compDisplay.style.animation='glowPulse 0.5s'; playPop(); };
+        
+        // Time Capsule
+        document.getElementById('pastBtn').onclick = () => document.getElementById('timeMessage').innerHTML = "💜 Past: You've always been amazing, even if you didn't see it. 💜";
+        document.getElementById('presentBtn').onclick = () => document.getElementById('timeMessage').innerHTML = "✨ Present: Right now, you are exactly where you need to be. ✨";
+        document.getElementById('futureBtn').onclick = () => document.getElementById('timeMessage').innerHTML = "🌟 Future: Incredible things are waiting for you! Adventure and joy ahead! 🌟";
+        
+        // Cake
+        let candles = 5;
+        const cakeDiv = document.getElementById('cakeCandles');
+        cakeDiv.onclick = () => { if(candles>0){ candles--; cakeDiv.innerText='🎂'+'🕯️'.repeat(candles); playPop(); if(candles===0){ document.getElementById('cakeCeleb').style.display='block'; for(let i=0;i<60;i++){ let f=document.createElement('div'); f.innerText=['🎆','✨','💖','🎉'][Math.floor(Math.random()*4)]; f.style.position='fixed'; f.style.left=Math.random()*100+'%'; f.style.top=Math.random()*100+'%'; f.style.fontSize='28px'; f.style.animation='fall 1s forwards'; document.body.appendChild(f); setTimeout(()=>f.remove(),1000); } playCheer(); } } };
+        
+        document.getElementById('finalBtn').onclick = () => showFinalMessage();
+        
+        // Chapter 1 typing effect
+        const prophecyDiv = document.getElementById('prophecyText');
+        const prophecyText = "Long ago...\n\nA prophecy foretold a special day...\n\nA day when someone extraordinary would become one year more amazing...\n\nThat day is today.\n\n✨ HAPPY BIRTHDAY, BEAUTIFUL SOUL! ✨";
+        let idx=0;
+        function typeProphecy() { if(idx<prophecyText.length) { prophecyDiv.innerHTML += prophecyText.charAt(idx); idx++; setTimeout(typeProphecy, 40); } }
+        typeProphecy();
+        document.getElementById('beginBtn').onclick = () => showChapter(2);
+        
+        // Next buttons
+        document.querySelectorAll('.nextBtn').forEach(btn => {
+            btn.onclick = () => showChapter(parseInt(btn.dataset.next));
+        });
+        
+        // Star collection quest
+        let starCollected = localStorage.getItem('starsCollected') ? parseInt(localStorage.getItem('starsCollected')) : 0;
+        document.getElementById('starCount').innerText = starCollected;
+        function addStarCollector() {
+            const stars = document.querySelectorAll('.card');
+            stars.forEach(star => {
+                if(!star.dataset.starEvent) {
+                    star.dataset.starEvent = 'true';
+                    star.addEventListener('click', () => {
+                        if(!star.dataset.collected) {
+                            star.dataset.collected = 'true';
+                            starCollected++;
+                            localStorage.setItem('starsCollected', starCollected);
+                            document.getElementById('starCount').innerText = starCollected;
+                            if(starCollected === 10) document.getElementById('starRewards').innerHTML = '<p class="secret-letter">🏆 Achievement Unlocked: Birthday Legend! 🏆</p>';
+                            playCheer();
+                        }
+                    });
+                }
+            });
+        }
+        setInterval(addStarCollector, 500);
+    }
+    
+    function showFinalMessage() {
+        document.querySelectorAll('.chapter').forEach(ch => ch.classList.add('hidden'));
+        const finalDiv = document.getElementById('finalMessage');
+        finalDiv.classList.remove('hidden');
+        finalDiv.innerHTML = `<div class="glass-card" style="max-width:800px;"><h2 class="hero-title">One Last Message...</h2><p class="secret-letter" id="finalMsgText" style="white-space:pre-line; line-height:2; font-size:1.4rem;"></p><button id="secretBtn" style="margin-top:20px;">💜 One Last Secret 💜</button><button id="restartBtn" style="margin-top:20px; background:transparent; border:1px solid white;">Explore Again</button></div>`;
+        const finalMsgArr = ["Thank you for being such an amazing person.", "Thank you for all the smiles.", "Thank you for simply being you.", "I hope this year brings you happiness, success, good health, beautiful memories, and countless reasons to smile.", "I hope life treats you kindly and gives you everything you deserve.", "Happy Birthday ❤️", "Made With Love By Tanishq 💜"];
+        let lineIdx=0; const finalP = document.getElementById('finalMsgText');
+        function typeFinal(){ if(lineIdx<finalMsgArr.length){ finalP.innerHTML += (lineIdx>0?'\n\n':'')+finalMsgArr[lineIdx]; lineIdx++; setTimeout(typeFinal, 500); } }
+        typeFinal();
+        document.getElementById('secretBtn').onclick = () => showSecretEnding();
+        document.getElementById('restartBtn').onclick = () => window.location.reload();
+    }
+    
+    function showSecretEnding() {
+        document.querySelectorAll('.chapter').forEach(ch => ch.classList.add('hidden'));
+        const secretDiv = document.getElementById('secretEnding');
+        secretDiv.classList.remove('hidden');
+        secretDiv.innerHTML = `<div class="glass-card" style="max-width:700px;"><h2 class="hero-title">🤫 One Last Question...</h2><p class="secret-letter">Before you leave... I have one final question...</p><h3 class="fantasy-title">💜 Do You Like Me?</h3><div style="display:flex; gap:1rem; justify-content:center; margin:20px; flex-wrap:wrap;"><button id="yesBtn" style="background:#ff9fcf;">YES 💖</button><button id="maybeBtn">MAYBE 🤔</button><button id="noBtn">NO 😢</button></div></div>`;
+        
+        document.getElementById('yesBtn').onclick = () => {
+            secretDiv.innerHTML = `<div class="glass-card"><h2 class="hero-title">😏 Don't get too excited...</h2><div style="font-size:4rem; animation: bounceHeart 0.5s infinite;">🐉✨</div><p class="secret-letter" style="font-size:1.5rem;">I already knew this.</p><p class="body-text">I'm not going anywhere. Let's take time...</p><div id="questSection" style="margin:20px;"><button id="helpMeBtn" class="glow-btn">👀 Help me find a girlfriend? 👀</button></div><button id="restartEndBtn" style="margin-top:20px; background:transparent;">🎂 Back to Birthday Magic 🎂</button></div>`;
+            playCheer();
+            document.getElementById('helpMeBtn').onclick = () => {
+                secretDiv.innerHTML = `<div class="glass-card"><h2 class="fantasy-title">🏆 New Quest Unlocked!</h2><p>Quest: Help Tanishq Find A Girlfriend</p><p class="secret-letter">Level: Wingman/Wingwoman 👑</p><div style="font-size:3rem;">🤝💜</div><p>Thank you for being honest and amazing. Let's keep making great memories!</p><button onclick="window.location.reload()">Continue Journey ✨</button></div>`;
+            };
+            document.getElementById('restartEndBtn').onclick = () => window.location.reload();
+        };
+        
+        document.getElementById('maybeBtn').onclick = () => { 
+            secretDiv.innerHTML = `<div class="glass-card"><h2 class="fantasy-title">🤔 Hmm... The Council Accepts This Answer.</h2><div style="font-size:3rem;">🔮</div><p>Further Investigation Required 🔍😂</p><button onclick="window.location.reload()">Return to Magic</button></div>`; 
+        };
+        
+        document.getElementById('noBtn').onclick = () => {
+            secretDiv.innerHTML = `<div class="glass-card"><h2 class="fantasy-title">Don't get overexcited 😭</h2><div style="font-size:4rem;">😭🐰</div><p>I knew you would betray me. That's why I came prepared.</p><div style="width:100%; background:#333; border-radius:20px; margin:15px 0;"><div style="width:0%; height:20px; background:#ff77aa; border-radius:20px;" id="barFill"></div></div><p id="loadPercent">Searching for girlfriend... 0%</p><p id="finalMsgSecret"></p><button id="acceptQuest">Accept Quest: Help Tanishq Find A Girlfriend</button><button onclick="window.location.reload()" style="margin-top:10px;">Return</button></div>`;
+            let percent=0; const interval = setInterval(()=>{ percent+=Math.floor(Math.random()*15)+5; if(percent>=100){ percent=100; clearInterval(interval); document.getElementById('loadPercent').innerHTML='ERROR ❌ No girlfriend found. Reason: Standards too high.'; document.getElementById('finalMsgSecret').innerHTML='Fine. Happy Birthday Anyway 💜<br>New Quest Unlocked!'; } document.getElementById('barFill').style.width=percent+'%'; document.getElementById('loadPercent').innerHTML=`Searching... ${percent}%`; }, 100);
+            document.getElementById('acceptQuest').onclick = () => { alert('Quest Accepted! 😂 You are now an official Wingman!'); window.location.reload(); };
+        };
+    }
+    
+    // FULLY AUTOMATIC MUSIC - No button, plays on its own
+    const music = document.getElementById('bgMusic');
+    music.volume = 0.35;
+    music.loop = true;
+    
+    // Force play music using every possible method
+    function forcePlayMusic() {
+        const playPromise = music.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                console.log("Music playing automatically!");
+            }).catch(error => {
+                console.log("Auto-play prevented, using fallback...");
+                // Fallback: create a silent AudioContext to unlock audio
+                const silentAudio = new AudioContext();
+                silentAudio.resume().then(() => {
+                    music.play().catch(e => console.log("Still blocked"));
+                });
+            });
+        }
+    }
+    
+    // Load everything
+    window.onload = () => {
+        initStars();
+        createFloatingHearts();
+        startDragon();
+        buildChapters();
+        
+        // Start music immediately
+        forcePlayMusic();
+        
+        // Also try on any user interaction as backup
+        const startMusicOnInteraction = () => {
+            music.play().catch(e => console.log("already playing"));
+            document.removeEventListener('click', startMusicOnInteraction);
+            document.removeEventListener('touchstart', startMusicOnInteraction);
+        };
+        document.addEventListener('click', startMusicOnInteraction);
+        document.addEventListener('touchstart', startMusicOnInteraction);
+        
+        setTimeout(()=>{ 
+            document.getElementById('loading').style.opacity='0'; 
+            setTimeout(()=>{ 
+                document.getElementById('loading').style.display='none'; 
+                document.querySelector('.app').style.display='block'; 
+                showChapter(1); 
+            }, 1000); 
+        }, 2500);
+        
+        document.body.addEventListener('click', ()=>{ if(audioCtx.state === 'suspended') audioCtx.resume(); });
+        const savedProgress = localStorage.getItem('birthdayProgress');
+        if(savedProgress && parseInt(savedProgress)>1) showChapter(parseInt(savedProgress));
+    };
+</script>
+</body>
+</html>
