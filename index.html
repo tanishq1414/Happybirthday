@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -72,6 +73,50 @@
         @keyframes loadProgress {
             0% { width: 0%; }
             100% { width: 100%; }
+        }
+
+        /* Tap to start music overlay for mobile */
+        #musicStartOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            z-index: 20000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 20px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: opacity 0.5s ease;
+        }
+        
+        #musicStartOverlay.hidden {
+            display: none;
+        }
+        
+        .start-music-btn {
+            background: linear-gradient(135deg, #ffb3e6, #c084fc);
+            border: none;
+            padding: 18px 48px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-radius: 60px;
+            color: #2c0f2f;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,179,230,0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(255,179,230,0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,179,230,0); }
         }
 
         .app {
@@ -242,10 +287,22 @@
             .secret-letter { font-size: 1.2rem; }
             .grid-3, .star-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
             .dragon-mascot { font-size: 2rem; bottom: 10px; left: 10px; }
+            .start-music-btn { font-size: 1.2rem; padding: 14px 32px; }
         }
     </style>
 </head>
 <body>
+<!-- TAP TO START MUSIC OVERLAY (REQUIRED FOR MOBILE) -->
+<div id="musicStartOverlay">
+    <div style="text-align: center; padding: 20px;">
+        <div style="font-size: 5rem; animation: bounceHeart 1s infinite;">🎵✨</div>
+        <h2 style="font-family: 'Pacifico', cursive; margin: 20px 0; color: #ffd6f0;">Tap to Start Magic</h2>
+        <p style="font-family: 'Poppins', sans-serif; margin-bottom: 30px;">✨ Touch anywhere to begin the musical journey ✨</p>
+        <button class="start-music-btn" id="startMusicBtn">🎵 Start Music & Adventure 🎵</button>
+        <p style="margin-top: 30px; font-size: 0.8rem; opacity: 0.7;">(Required for mobile browsers - one tap is all it takes!)</p>
+    </div>
+</div>
+
 <div id="loading">
     <div class="spinner"></div>
     <h2>✨ Preparing Birthday Magic... ✨</h2>
@@ -262,8 +319,8 @@
     <div class="dragon-mascot" id="dragon">🐉✨</div>
     <div class="dragon-speech" id="dragonSpeech">Psst... I found magic!</div>
     
-    <!-- Local MP3 Music - Valentine Mashup (Fully Automatic - No Button) -->
-    <audio id="bgMusic" loop preload="auto" autoplay>
+    <!-- Local MP3 Music - Valentine Mashup -->
+    <audio id="bgMusic" loop preload="auto">
         <source src="Valentine%20Mashup%202024%20%20Naresh%20Parmar%20%20Best%20of%20Love%20Mashup.mp3" type="audio/mpeg">
     </audio>
 
@@ -498,25 +555,46 @@
         };
     }
     
-    // FULLY AUTOMATIC MUSIC - No button, plays on its own
+    // MUSIC HANDLER - Works on both mobile and desktop
     const music = document.getElementById('bgMusic');
     music.volume = 0.35;
     music.loop = true;
     
-    // Force play music using every possible method
-    function forcePlayMusic() {
-        const playPromise = music.play();
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                console.log("Music playing automatically!");
-            }).catch(error => {
-                console.log("Auto-play prevented, using fallback...");
-                // Fallback: create a silent AudioContext to unlock audio
-                const silentAudio = new AudioContext();
-                silentAudio.resume().then(() => {
-                    music.play().catch(e => console.log("Still blocked"));
-                });
-            });
+    let musicStarted = false;
+    
+    function startMusicAndSite() {
+        if (musicStarted) return;
+        musicStarted = true;
+        
+        // Play music
+        music.play().then(() => {
+            console.log("Music started successfully!");
+        }).catch(e => {
+            console.log("Error playing music:", e);
+        });
+        
+        // Resume audio context
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        
+        // Hide overlay with animation
+        const overlay = document.getElementById('musicStartOverlay');
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+            overlay.classList.add('hidden');
+        }, 500);
+        
+        // Show the actual website content
+        document.querySelector('.app').style.display = 'block';
+        
+        // Hide loading if still visible
+        const loading = document.getElementById('loading');
+        if (loading.style.display !== 'none') {
+            loading.style.opacity = '0';
+            setTimeout(() => {
+                loading.style.display = 'none';
+            }, 500);
         }
     }
     
@@ -527,31 +605,44 @@
         startDragon();
         buildChapters();
         
-        // Start music immediately
-        forcePlayMusic();
+        // Setup music start on tap/click
+        const overlay = document.getElementById('musicStartOverlay');
+        const startBtn = document.getElementById('startMusicBtn');
         
-        // Also try on any user interaction as backup
-        const startMusicOnInteraction = () => {
-            music.play().catch(e => console.log("already playing"));
-            document.removeEventListener('click', startMusicOnInteraction);
-            document.removeEventListener('touchstart', startMusicOnInteraction);
+        // Start music when button is clicked
+        startBtn.onclick = (e) => {
+            e.stopPropagation();
+            startMusicAndSite();
+            showChapter(1);
         };
-        document.addEventListener('click', startMusicOnInteraction);
-        document.addEventListener('touchstart', startMusicOnInteraction);
         
-        setTimeout(()=>{ 
-            document.getElementById('loading').style.opacity='0'; 
-            setTimeout(()=>{ 
-                document.getElementById('loading').style.display='none'; 
-                document.querySelector('.app').style.display='block'; 
-                showChapter(1); 
-            }, 1000); 
-        }, 2500);
+        // Also start when tapping anywhere on overlay
+        overlay.onclick = (e) => {
+            if (e.target === overlay || e.target.classList.contains('start-music-btn')) {
+                // Already handled by button
+                if (e.target === overlay) {
+                    startMusicAndSite();
+                    showChapter(1);
+                }
+            }
+        };
         
-        document.body.addEventListener('click', ()=>{ if(audioCtx.state === 'suspended') audioCtx.resume(); });
+        // For desktop browsers that allow autoplay, we can try to start automatically
+        // but keep overlay just in case
+        setTimeout(() => {
+            music.play().then(() => {
+                // Autoplay worked! Hide overlay and show site
+                startMusicAndSite();
+                showChapter(1);
+            }).catch(() => {
+                console.log("Waiting for user interaction to start music");
+            });
+        }, 100);
+        
         const savedProgress = localStorage.getItem('birthdayProgress');
-        if(savedProgress && parseInt(savedProgress)>1) showChapter(parseInt(savedProgress));
+        if(savedProgress && parseInt(savedProgress)>1) currentChapter = parseInt(savedProgress);
     };
 </script>
 </body>
 </html>
+```
